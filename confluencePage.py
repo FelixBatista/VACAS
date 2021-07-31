@@ -1,4 +1,5 @@
 import requests
+import json
 import userCredentials
 import csv
 import parseaccount
@@ -22,6 +23,7 @@ def postOnConfluence():
     #insert all rows on the table from the CSV file
     with open('accountslist.csv') as l:
         reader = csv.reader(l, delimiter=',')
+        line_count = 0
         for row in reader:
             content += '<tr>'
             #last 7 digits in bold

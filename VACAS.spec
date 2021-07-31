@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(['VACAS.py'],
-             pathex=['/Users/qxz0n5g/Desktop/Vehice_Account_Automation/1.0.0'],
+             pathex=['/Users/qxz0n5g/Desktop/Vehice_Account_Automation'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -33,7 +33,7 @@ exe = EXE(pyz,
           disable_windowed_traceback=False,
           target_arch=None,
           codesign_identity=None,
-          entitlements_file=None )
+          entitlements_file=None , icon='cow.icns')
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,

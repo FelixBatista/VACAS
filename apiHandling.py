@@ -6,35 +6,67 @@ import cdcportals
 import vehicle
 import parseaccount
 
-
 #Check if it is logged and if not, log to cdc (both int and prod)
-def authenticate (JWT):
+def check_auth (JWT):
     #check if INT auth is ok
     response = requests.get(cdcportals.cdcgetcustomerdetails.format('int','WBAKS4106E0C36040'),headers = {'JWT':JWT.envint}, verify = False)
     if response.status_code == 401: #UNAUTHORIZED
-        pload = {'user_name':userCredentials.user['user_name'],'password':userCredentials.user['password']}
-        r = requests.post(cdcportals.cdcauth.format('int'),data = pload, verify = False)
-        api_token = r.json()['payload']['api_token']
-        JWTint = 'Bearer %s' % (api_token)
-        tokenHandling.writeJWT('JWTint.txt', JWTint)
-        print('JWTint file created and Logged')
+        print ('Not yet connected. Logging...')
+        isPassCorrect = authenticate ('int')
     elif response.status_code == 200: #AUTHORIZED
         print ('Already Logged')
+        isPassCorrect = True
     else:
         print ('ERROR %s' % (response))
+        isPassCorrect = False
     #check if PROD auth is ok
     response = requests.get(cdcportals.cdcgetcustomerdetails.format('prod','WBAKS4106E0C36040'),headers = {'JWT':JWT.envprod}, verify = False)
     if response.status_code == 401: #UNAUTHORIZED
-        pload = {'user_name':userCredentials.user['user_name'],'password':userCredentials.user['password']}
-        r = requests.post(cdcportals.cdcauth.format('prod'),data = pload, verify = False)
-        api_token = r.json()['payload']['api_token']
-        JWTprod = 'Bearer %s' % (api_token)
-        tokenHandling.writeJWT('JWTprod.txt', JWTprod)
-        print('JWTprod file created and Logged')
+        print ('Not yet connected. Logging...')
+        authenticate ('prod')
     elif response.status_code == 200: #AUTHORIZED
         print ('Already Logged')
     else:
         print ('ERROR %s' % (response))
+    return isPassCorrect
+
+def authenticate (env):
+    #Auth INT
+    if env == 'int':
+        pload = {'user_name':userCredentials.user['user_name'],'password':userCredentials.user['password']}
+        r = requests.post(cdcportals.cdcauth.format('int'),data = pload, headers={'Accept': 'application/vnd.api+json'}, verify = False)
+        #########
+        #actually, if you send the correct pass, it works, if not, you cant post and no json come back, breaking the code
+        if r.status_code == 200: #AUTHORIZED
+            api_token = r.json()['payload']['api_token']
+            JWTint = 'Bearer %s' % (api_token)
+            tokenHandling.writeJWT('JWTint.txt', JWTint)
+            print('JWTint file created and Logged')
+            isPassCorrect = True
+        elif r.status_code == 422: #UNAUTHORIZED
+            print ('No access or wrong password. Rewrite password.')
+            isPassCorrect = False
+        else:   #UNAUTHORIZED
+            print ('ERROR %s' % (r))
+            isPassCorrect = False
+    #Auth PROD
+    if env == 'prod':
+        pload = {'user_name':userCredentials.user['user_name'],'password':userCredentials.user['password']}
+        r = requests.post(cdcportals.cdcauth.format('prod'),data = pload, headers={'Accept': 'application/vnd.api+json'}, verify = False)
+        if r.status_code == 200: #AUTHORIZED
+            api_token = r.json()['payload']['api_token']
+            JWTprod = 'Bearer %s' % (api_token)
+            tokenHandling.writeJWT('JWTprod.txt', JWTprod)
+            print('JWTprod file created and Logged')
+            isPassCorrect = True
+        elif r.status_code == 422: #UNAUTHORIZED
+            print ('No access or wrong password. Rewrite password.')
+            isPassCorrect = False
+        else:   #UNAUTHORIZED
+            print ('ERROR %s' % (r))
+            isPassCorrect = False
+    return isPassCorrect
+
 
 #get the account and market that the vehicle is mapped from a single Vin
 def getAccountFromVin (JWT,vin):
