@@ -1,10 +1,10 @@
 import requests
 import csv
-import tokenHandling
-import userCredentials
-import cdcportals
-import vehicle
-import parseaccount
+from modules import tokenHandling
+from modules import userCredentials
+from modules import cdcportals
+from modules import vehicle
+from modules import parseaccount
 
 #Check if it is logged and if not, log to cdc (both int and prod)
 def check_auth (JWT):
@@ -40,7 +40,7 @@ def authenticate (env):
         if r.status_code == 200: #AUTHORIZED
             api_token = r.json()['payload']['api_token']
             JWTint = 'Bearer %s' % (api_token)
-            tokenHandling.writeJWT('JWTint.txt', JWTint)
+            tokenHandling.writeJWT('temp/JWTint.txt', JWTint)
             print('JWTint file created and Logged')
             isPassCorrect = True
         elif r.status_code == 422: #UNAUTHORIZED
@@ -56,7 +56,7 @@ def authenticate (env):
         if r.status_code == 200: #AUTHORIZED
             api_token = r.json()['payload']['api_token']
             JWTprod = 'Bearer %s' % (api_token)
-            tokenHandling.writeJWT('JWTprod.txt', JWTprod)
+            tokenHandling.writeJWT('temp/JWTprod.txt', JWTprod)
             print('JWTprod file created and Logged')
             isPassCorrect = True
         elif r.status_code == 422: #UNAUTHORIZED
@@ -95,7 +95,7 @@ def getAccountFromVin (JWT,vin):
     temp = vehicle.Vehicle(*vin, userMarketInt, loginIdInt, userMarketProd, loginIdProd)
     print(temp.vin,'|',temp.intMarket,'|',temp.accountInt,'|',temp.prodMarket,'|',temp.accountProd)
     #saving the vehicle on a csv file
-    with open('accountslist.csv','a', newline='') as f:
+    with open('temp/accountslist.csv','a', newline='') as f:
         writer = csv.writer(f)
         row = [temp.vin, temp.intMarket, temp.accountInt, temp.prodMarket, temp.accountProd]
         writer.writerow(row)
