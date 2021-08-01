@@ -1,15 +1,14 @@
 import requests
-import json
-import userCredentials
 import csv
-import parseaccount
+from modules import userCredentials
+from modules import parseaccount
 
 #Confluence Page ID
-page_id = '1497858644'
-credentials = (userCredentials.user['user_name'],userCredentials.user['password'])
-
 
 def postOnConfluence():
+    page_id = '1497858644'
+    credentials = (userCredentials.user['user_name'],userCredentials.user['password'])
+
     #make table header
     content = '<h2>INT and PROD accounts for each vehicle</h2>'
     content += '<table><thead><tr>'
@@ -21,9 +20,8 @@ def postOnConfluence():
     content += '</tr></thead><tbody>'
 
     #insert all rows on the table from the CSV file
-    with open('accountslist.csv') as l:
+    with open('temp/accountslist.csv') as l:
         reader = csv.reader(l, delimiter=',')
-        line_count = 0
         for row in reader:
             content += '<tr>'
             #last 7 digits in bold
@@ -35,8 +33,7 @@ def postOnConfluence():
             content += f'<td style="background-color: {parseaccount.getColor(row[4])};">{row[4]}</td>'
             content += '</tr>'
         content += '</tbody></table>'
-    
-                                    
+
     info = get_page_info(page_id, credentials)
     print(f'found page {page_id}@v{info["version"]["number"]}')
 
@@ -53,7 +50,7 @@ confluence_url = 'https://atc.bmwgroup.net/confluence/rest/api/content/{0}'
 
 def get_page_info(page_id, credentials):
     url = confluence_url.format(page_id)
-    r = requests.get(url, auth=credentials)
+    r = requests.get(url, auth=credentials) #Stopped working. On postman it works on two header: authorization and cookies
     r.raise_for_status()
 
     response = r.json()
