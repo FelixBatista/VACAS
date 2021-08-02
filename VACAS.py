@@ -9,7 +9,7 @@ from sample import apiHandling
 from sample import tokenHandling
 from sample import confluencePage
 from sample import userCredentials
-from icons import mac_icon
+from resources.icons import mac_icon
 
 #Load Accounts list to present on screen
 if os.path.isfile ('temp/accountslist.csv') == True:
@@ -82,11 +82,11 @@ def gui ():
     #define columns
     col1=[[sg.Output(size=(50,10))]]
     col2=[[sg.Multiline(file, size=(80, 10), write_only=False, key='printoutput', auto_refresh=True, no_scrollbar=False)]]
-    col3=[  [sg.Image('images/good.png',key= 'checkbox_password_image',visible=False)],
-            [sg.Image('images/good.png',key= 'checkbox_acc_list_image',visible=False)],
-            [sg.Image('images/good.png',key= 'checkbox_auth_image',visible=False)],
-            [sg.Image('images/good.png',key= 'checkbox_vehicles_image',visible=False)],
-            [sg.Image('images/good.png',key= 'checkbox_confluence_image',visible=False)]]
+    col3=[  [sg.Image('resources/images/good.png',key= 'checkbox_password_image',visible=False)],
+            [sg.Image('resources/images/good.png',key= 'checkbox_acc_list_image',visible=False)],
+            [sg.Image('resources/images/good.png',key= 'checkbox_auth_image',visible=False)],
+            [sg.Image('resources/images/good.png',key= 'checkbox_vehicles_image',visible=False)],
+            [sg.Image('resources/images/good.png',key= 'checkbox_confluence_image',visible=False)]]
     col4=[  [sg.Text('Setting user credentials',key= 'checkbox_password_text',font=('arial',10))],
             [sg.Text('Making a new Accounts list',key= 'checkbox_acc_list_text',font=('arial',10))],
             [sg.Text('Checking authentication',key= 'checkbox_auth_text',font=('arial',10))],
@@ -124,7 +124,7 @@ def gui ():
 
         if thread:
             while thread.is_alive() == True:
-                sg.popup_animated('images/loading.gif', message='Wait a second. Loading...', no_titlebar=False, time_between_frames=100, text_color='black', background_color='white', grab_anywhere=True, icon=mac_icon.mac_icon)
+                sg.popup_animated('resources/images/loading.gif', message='Wait a second. Loading...', no_titlebar=False, time_between_frames=100, text_color='black', background_color='white', grab_anywhere=True, icon=mac_icon.mac_icon)
             thread.join(timeout=0)
             if not thread.is_alive():
                 sg.popup_animated(None)
