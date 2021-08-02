@@ -5,10 +5,10 @@ import threading
 import csv
 import os
 import PySimpleGUI as sg
-from modules import apiHandling
-from modules import tokenHandling
-from modules import confluencePage
-from modules import userCredentials
+from sample import apiHandling
+from sample import tokenHandling
+from sample import confluencePage
+from sample import userCredentials
 from icons import mac_icon
 
 #Load Accounts list to present on screen

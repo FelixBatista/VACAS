@@ -1,7 +1,7 @@
 import requests
 import csv
-from modules import userCredentials
-from modules import parseaccount
+from sample import userCredentials
+from sample import parseaccount
 
 #Confluence Page ID
 

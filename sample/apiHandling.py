@@ -1,10 +1,10 @@
 import requests
 import csv
-from modules import tokenHandling
-from modules import userCredentials
-from modules import cdcportals
-from modules import vehicle
-from modules import parseaccount
+from sample import tokenHandling
+from sample import userCredentials
+from sample import cdcportals
+from sample import vehicle
+from sample import parseaccount
 
 #Check if it is logged and if not, log to cdc (both int and prod)
 def check_auth (JWT):
