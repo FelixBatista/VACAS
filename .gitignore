@@ -38,7 +38,7 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
-temp/
+generated/
 
 
 # PyInstaller
