@@ -5,35 +5,35 @@ import threading
 import csv
 import os
 import PySimpleGUI as sg
-from sample import apiHandling
-from sample import tokenHandling
-from sample import confluencePage
-from sample import userCredentials
+import apiHandling
+import tokenHandling
+import confluencePage
+import userCredentials
 from resources.icons import mac_icon
 
 #Load Accounts list to present on screen
-if os.path.isfile ('temp/accountslist.csv') == True:
-    file = open('temp/accountslist.csv','r').read()
+if os.path.isfile ('generated/accountslist.csv') == True:
+    file = open('generated/accountslist.csv','r').read()
 else:
-    os.mkdir('temp')
-    file = open('temp/accountslist.csv','w')
+    os.mkdir('generated')
+    file = open('generated/accountslist.csv','w')
     file.write(' ')
-    file = open('temp/accountslist.csv','r').read()
+    file = open('generated/accountslist.csv','r').read()
     
 
 #Worker thread to check password and prepare program
 def prepare_program (window):
     print('Starting VACAS')
     #cleaning the accounts file
-    with open('temp/accountslist.csv','r+') as file:
+    with open('generated/accountslist.csv','r+') as file:
         file.truncate(0) # need '0' when using r+
-        file = open('temp/accountslist.csv','r+').read()
+        file = open('generated/accountslist.csv','r+').read()
         window['printoutput'].update(file)
     window['checkbox_acc_list_image'].update(visible=True)
 
     #set JWT class
-    if os.path.isfile ('temp/JWTint.txt') == True & os.path.isfile ('temp/JWTprod.txt') == True:
-        JWT = tokenHandling.jwt(tokenHandling.readJWT('temp/JWTint.txt'),tokenHandling.readJWT('temp/JWTprod.txt'))
+    if os.path.isfile ('generated/JWTint.txt') == True & os.path.isfile ('generated/JWTprod.txt') == True:
+        JWT = tokenHandling.jwt(tokenHandling.readJWT('generated/JWTint.txt'),tokenHandling.readJWT('generated/JWTprod.txt'))
         #Verifying if user is logged to CDC-INT and PROD
         run = apiHandling.check_auth(JWT)
     else:
@@ -52,7 +52,7 @@ def prepare_program (window):
 
 def execute_program (window):
     #set new JWT class
-    JWT = tokenHandling.jwt(tokenHandling.readJWT('temp/JWTint.txt'),tokenHandling.readJWT('temp/JWTprod.txt'))
+    JWT = tokenHandling.jwt(tokenHandling.readJWT('generated/JWTint.txt'),tokenHandling.readJWT('generated/JWTprod.txt'))
     window['checkbox_password_image'].update(visible=True)
 
     #Making the file into a list
@@ -63,7 +63,7 @@ def execute_program (window):
     #Go throught list getting all accounts for each VIN both INT and PROD
     for x in vehiclelist:
         apiHandling.getAccountFromVin(JWT,x)
-        file = open('temp/accountslist.csv','r+').read()
+        file = open('generated/accountslist.csv','r+').read()
         window['printoutput'].update(file)
     window['checkbox_vehicles_image'].update(visible=True)
 
