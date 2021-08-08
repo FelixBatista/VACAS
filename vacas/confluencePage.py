@@ -1,12 +1,12 @@
 import requests
 import csv
-from modules import userCredentials
-from modules import parseaccount
+import userCredentials
+import parseaccount
 
 #Confluence Page ID
 
 def postOnConfluence():
-    page_id = '1497858644'
+    page_id = '1497858644'      #TODO: Put all hardcoded definitions liek this in config file
     credentials = (userCredentials.user['user_name'],userCredentials.user['password'])
 
     #make table header
@@ -20,7 +20,7 @@ def postOnConfluence():
     content += '</tr></thead><tbody>'
 
     #insert all rows on the table from the CSV file
-    with open('temp/accountslist.csv') as l:
+    with open('generated/accountslist.csv') as l:
         reader = csv.reader(l, delimiter=',')
         for row in reader:
             content += '<tr>'

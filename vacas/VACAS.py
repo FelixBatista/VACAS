@@ -5,35 +5,35 @@ import threading
 import csv
 import os
 import PySimpleGUI as sg
-from modules import apiHandling
-from modules import tokenHandling
-from modules import confluencePage
-from modules import userCredentials
-from icons import mac_icon
+import apiHandling
+import tokenHandling
+import confluencePage
+import userCredentials
+from resources.icons import mac_icon
 
 #Load Accounts list to present on screen
-if os.path.isfile ('temp/accountslist.csv') == True:
-    file = open('temp/accountslist.csv','r').read()
+if os.path.isfile ('generated/accountslist.csv') == True:
+    file = open('generated/accountslist.csv','r').read()
 else:
-    os.mkdir('temp')
-    file = open('temp/accountslist.csv','w')
+    os.mkdir('generated')
+    file = open('generated/accountslist.csv','w')
     file.write(' ')
-    file = open('temp/accountslist.csv','r').read()
+    file = open('generated/accountslist.csv','r').read()
     
 
 #Worker thread to check password and prepare program
 def prepare_program (window):
     print('Starting VACAS')
     #cleaning the accounts file
-    with open('temp/accountslist.csv','r+') as file:
+    with open('generated/accountslist.csv','r+') as file:
         file.truncate(0) # need '0' when using r+
-        file = open('temp/accountslist.csv','r+').read()
+        file = open('generated/accountslist.csv','r+').read()
         window['printoutput'].update(file)
     window['checkbox_acc_list_image'].update(visible=True)
 
     #set JWT class
-    if os.path.isfile ('temp/JWTint.txt') == True & os.path.isfile ('temp/JWTprod.txt') == True:
-        JWT = tokenHandling.jwt(tokenHandling.readJWT('temp/JWTint.txt'),tokenHandling.readJWT('temp/JWTprod.txt'))
+    if os.path.isfile ('generated/JWTint.txt') == True & os.path.isfile ('generated/JWTprod.txt') == True:
+        JWT = tokenHandling.jwt(tokenHandling.readJWT('generated/JWTint.txt'),tokenHandling.readJWT('generated/JWTprod.txt'))
         #Verifying if user is logged to CDC-INT and PROD
         run = apiHandling.check_auth(JWT)
     else:
@@ -52,7 +52,7 @@ def prepare_program (window):
 
 def execute_program (window):
     #set new JWT class
-    JWT = tokenHandling.jwt(tokenHandling.readJWT('temp/JWTint.txt'),tokenHandling.readJWT('temp/JWTprod.txt'))
+    JWT = tokenHandling.jwt(tokenHandling.readJWT('generated/JWTint.txt'),tokenHandling.readJWT('generated/JWTprod.txt'))
     window['checkbox_password_image'].update(visible=True)
 
     #Making the file into a list
@@ -63,7 +63,7 @@ def execute_program (window):
     #Go throught list getting all accounts for each VIN both INT and PROD
     for x in vehiclelist:
         apiHandling.getAccountFromVin(JWT,x)
-        file = open('temp/accountslist.csv','r+').read()
+        file = open('generated/accountslist.csv','r+').read()
         window['printoutput'].update(file)
     window['checkbox_vehicles_image'].update(visible=True)
 
@@ -82,11 +82,11 @@ def gui ():
     #define columns
     col1=[[sg.Output(size=(50,10))]]
     col2=[[sg.Multiline(file, size=(80, 10), write_only=False, key='printoutput', auto_refresh=True, no_scrollbar=False)]]
-    col3=[  [sg.Image('images/good.png',key= 'checkbox_password_image',visible=False)],
-            [sg.Image('images/good.png',key= 'checkbox_acc_list_image',visible=False)],
-            [sg.Image('images/good.png',key= 'checkbox_auth_image',visible=False)],
-            [sg.Image('images/good.png',key= 'checkbox_vehicles_image',visible=False)],
-            [sg.Image('images/good.png',key= 'checkbox_confluence_image',visible=False)]]
+    col3=[  [sg.Image('resources/images/good.png',key= 'checkbox_password_image',visible=False)],
+            [sg.Image('resources/images/good.png',key= 'checkbox_acc_list_image',visible=False)],
+            [sg.Image('resources/images/good.png',key= 'checkbox_auth_image',visible=False)],
+            [sg.Image('resources/images/good.png',key= 'checkbox_vehicles_image',visible=False)],
+            [sg.Image('resources/images/good.png',key= 'checkbox_confluence_image',visible=False)]]
     col4=[  [sg.Text('Setting user credentials',key= 'checkbox_password_text',font=('arial',10))],
             [sg.Text('Making a new Accounts list',key= 'checkbox_acc_list_text',font=('arial',10))],
             [sg.Text('Checking authentication',key= 'checkbox_auth_text',font=('arial',10))],
@@ -124,7 +124,7 @@ def gui ():
 
         if thread:
             while thread.is_alive() == True:
-                sg.popup_animated('images/loading.gif', message='Wait a second. Loading...', no_titlebar=False, time_between_frames=100, text_color='black', background_color='white', grab_anywhere=True, icon=mac_icon.mac_icon)
+                sg.popup_animated('resources/images/loading.gif', message='Wait a second. Loading...', no_titlebar=False, time_between_frames=100, text_color='black', background_color='white', grab_anywhere=True, icon=mac_icon.mac_icon)
             thread.join(timeout=0)
             if not thread.is_alive():
                 sg.popup_animated(None)

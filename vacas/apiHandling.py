@@ -1,36 +1,13 @@
 import requests
 import csv
-from modules import tokenHandling
-from modules import userCredentials
-from modules import cdcportals
-from modules import vehicle
-from modules import parseaccount
+import tokenHandling
+import userCredentials
+import cdcportals
+import vehicle
+import parseaccount
 
-#Check if it is logged and if not, log to cdc (both int and prod)
-def check_auth (JWT):
-    #check if INT auth is ok
-    response = requests.get(cdcportals.cdcgetcustomerdetails.format('int','WBAKS4106E0C36040'),headers = {'JWT':JWT.envint}, verify = False)
-    if response.status_code == 401: #UNAUTHORIZED
-        print ('Not yet connected. Logging...')
-        isPassCorrect = authenticate ('int')
-    elif response.status_code == 200: #AUTHORIZED
-        print ('Already Logged')
-        isPassCorrect = True
-    else:
-        print ('ERROR %s' % (response))
-        isPassCorrect = False
-    #check if PROD auth is ok
-    response = requests.get(cdcportals.cdcgetcustomerdetails.format('prod','WBAKS4106E0C36040'),headers = {'JWT':JWT.envprod}, verify = False)
-    if response.status_code == 401: #UNAUTHORIZED
-        print ('Not yet connected. Logging...')
-        authenticate ('prod')
-    elif response.status_code == 200: #AUTHORIZED
-        print ('Already Logged')
-    else:
-        print ('ERROR %s' % (response))
-    return isPassCorrect
 
-def authenticate (env):
+def authenticate (env):  #TODO: make try catch for everything inside this
     #Auth INT
     if env == 'int':
         pload = {'user_name':userCredentials.user['user_name'],'password':userCredentials.user['password']}
@@ -40,7 +17,7 @@ def authenticate (env):
         if r.status_code == 200: #AUTHORIZED
             api_token = r.json()['payload']['api_token']
             JWTint = 'Bearer %s' % (api_token)
-            tokenHandling.writeJWT('temp/JWTint.txt', JWTint)
+            tokenHandling.writeJWT('generated/JWTint.txt', JWTint)
             print('JWTint file created and Logged')
             isPassCorrect = True
         elif r.status_code == 422: #UNAUTHORIZED
@@ -56,7 +33,7 @@ def authenticate (env):
         if r.status_code == 200: #AUTHORIZED
             api_token = r.json()['payload']['api_token']
             JWTprod = 'Bearer %s' % (api_token)
-            tokenHandling.writeJWT('temp/JWTprod.txt', JWTprod)
+            tokenHandling.writeJWT('generated/JWTprod.txt', JWTprod)
             print('JWTprod file created and Logged')
             isPassCorrect = True
         elif r.status_code == 422: #UNAUTHORIZED
@@ -95,7 +72,31 @@ def getAccountFromVin (JWT,vin):
     temp = vehicle.Vehicle(*vin, userMarketInt, loginIdInt, userMarketProd, loginIdProd)
     print(temp.vin,'|',temp.intMarket,'|',temp.accountInt,'|',temp.prodMarket,'|',temp.accountProd)
     #saving the vehicle on a csv file
-    with open('temp/accountslist.csv','a', newline='') as f:
+    with open('generated/accountslist.csv','a', newline='') as f:
         writer = csv.writer(f)
         row = [temp.vin, temp.intMarket, temp.accountInt, temp.prodMarket, temp.accountProd]
         writer.writerow(row)
+
+#Check if it is logged and if not, log to cdc (both int and prod)
+def check_auth (JWT):
+    #check if INT auth is ok
+    response = requests.get(cdcportals.cdcgetcustomerdetails.format('int','WBAKS4106E0C36040'),headers = {'JWT':JWT.envint}, verify = False) #TODO: put this haerdcoded vehicle to a config file
+    if response.status_code == 401: #UNAUTHORIZED
+        print ('Not yet connected. Logging...')
+        isPassCorrect = authenticate ('int')
+    elif response.status_code == 200: #AUTHORIZED
+        print ('Already Logged')
+        isPassCorrect = True
+    else:
+        print ('ERROR %s' % (response))
+        isPassCorrect = False
+    #check if PROD auth is ok
+    response = requests.get(cdcportals.cdcgetcustomerdetails.format('prod','WBAKS4106E0C36040'),headers = {'JWT':JWT.envprod}, verify = False)  #TODO: put this haerdcoded vehicle to a config file
+    if response.status_code == 401: #UNAUTHORIZED
+        print ('Not yet connected. Logging...')
+        authenticate ('prod')
+    elif response.status_code == 200: #AUTHORIZED
+        print ('Already Logged')
+    else:
+        print ('ERROR %s' % (response))
+    return isPassCorrect
