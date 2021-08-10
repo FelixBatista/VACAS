@@ -9,6 +9,7 @@ import apiHandling
 import tokenHandling
 import confluencePage
 import userCredentials
+import yaml
 from resources.icons import mac_icon
 
 #Load Accounts list to present on screen
@@ -24,6 +25,13 @@ else:
 #Worker thread to check password and prepare program
 def prepare_program (window):
     print('Starting VACAS')
+
+    #Set all info from CONFIG
+    config_file = yaml.load(open("config.yaml", 'r'), Loader=yaml.SafeLoader)
+    print('Loading Config.yaml file...')
+    for key, value in config_file.items():
+        print(f"{key}: {value}")
+
     #cleaning the accounts file
     with open('generated/accountslist.csv','r+') as file:
         file.truncate(0) # need '0' when using r+

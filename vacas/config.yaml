@@ -1,0 +1,13 @@
+#ENDPOINTS
+#CDC
+cdcauth: 'https://cdc-{}.bmwgroup.net/v2/api/auth/login'
+cdcgetcustomerdetails: 'https://cdc-{}.bmwgroup.net/v2/api/car/get-customer-details/{}'
+
+#AUTHENTICATION VIN
+#When trying to authenticate, it will use a VIN to communicate to CDC.
+#If something is not working, try changing this VIN.
+test_vin: WBAKS4106E0C36040
+
+
+#CONFLUENCE
+confluence_page: "1497858644"
