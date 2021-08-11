@@ -11,4 +11,3 @@ def getColor (account):
         return '#fffae5' #yellow
     else:
         return '#e3fcef' #green
-
