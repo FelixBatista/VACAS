@@ -10,17 +10,9 @@ import tokenHandling
 import confluencePage
 import userCredentials
 import yaml
+import file_check
 from resources.icons import mac_icon
 
-#Load Accounts list to present on screen
-if os.path.isfile ('generated/accountslist.csv') == True:
-    file = open('generated/accountslist.csv','r').read()
-else:
-    os.mkdir('generated')
-    file = open('generated/accountslist.csv','w')
-    file.write(' ')
-    file = open('generated/accountslist.csv','r').read()
-    
 
 #Worker thread to check password and prepare program
 def prepare_program (window):
@@ -39,14 +31,15 @@ def prepare_program (window):
         window['printoutput'].update(file)
     window['checkbox_acc_list_image'].update(visible=True)
 
+    #checking for JWT files
+    file_check.file_check ('generated/JWTint.txt')
+    file_check.file_check ('generated/JWTprod.txt')
+
     #set JWT class
-    if os.path.isfile ('generated/JWTint.txt') == True & os.path.isfile ('generated/JWTprod.txt') == True:
-        JWT = tokenHandling.jwt(tokenHandling.readJWT('generated/JWTint.txt'),tokenHandling.readJWT('generated/JWTprod.txt'))
-        #Verifying if user is logged to CDC-INT and PROD
-        run = apiHandling.check_auth(JWT)
-    else:
-        run = apiHandling.authenticate('int')
-        apiHandling.authenticate('prod')
+    JWT = tokenHandling.jwt(tokenHandling.readJWT('generated/JWTint.txt'),tokenHandling.readJWT('generated/JWTprod.txt'))
+    #Verifying if user is logged to CDC-INT and PROD
+    run = apiHandling.check_auth(JWT)
+    
     #check password and display results
     if run == False:
         window['senha_errada'].update(visible=True)
@@ -142,5 +135,6 @@ def gui ():
     window.close()
 
 if __name__ == '__main__':
+    file = file_check.file_check ('generated/accountslist.csv')
     gui()
     print('Exiting Program')
