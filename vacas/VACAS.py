@@ -64,7 +64,7 @@ def execute_program (window):
     window['checkbox_password_image'].update(visible=True)
 
     #Making the file into a list
-    with open('vehiclelist.csv', newline='') as f:
+    with open('resources/vehicles/vehiclelist.csv', newline='') as f:
         reader = csv.reader(f)
         vehiclelist = list(reader)
 
@@ -116,12 +116,12 @@ def gui ():
     # --------------------- EVENT LOOP ---------------------
     while True:
         event, values = window.read()
-        userCredentials.user['password'] = values ['password']
         
         if event in (sg.WIN_CLOSED, 'Exit'):
             break
 
         elif event == 'Start':
+            userCredentials.user['password'] = values ['password']
             thread = threading.Thread(target=prepare_program, args=(window,), daemon=True)
             thread.start()
 

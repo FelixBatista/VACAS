@@ -2,16 +2,24 @@ import requests
 import csv
 import tokenHandling
 import userCredentials
-import cdcportals
 import vehicle
 import parseaccount
+import yaml
 
+#Load Configuration
+config_file = yaml.load(open("config.yaml", 'r'), Loader=yaml.SafeLoader)
+cdcauth = config_file['cdcauth']
+cdcgetcustomerdetails = config_file['cdcgetcustomerdetails']
+test_vin = config_file['test_vin']
+requestopts = { 'headers': {'Accept': 'application/vnd.api+json'},
+                'verify': 'resources/certificate/certificate.pem'
+                }
 
 def authenticate (env):  #TODO: make try catch for everything inside this
     #Auth INT
     if env == 'int':
         pload = {'user_name':userCredentials.user['user_name'],'password':userCredentials.user['password']}
-        r = requests.post(cdcportals.cdcauth.format('int'),data = pload, headers={'Accept': 'application/vnd.api+json'}, verify = False)
+        r = requests.post(cdcauth.format('int'),data = pload, **requestopts)
         #########
         #actually, if you send the correct pass, it works, if not, you cant post and no json come back, breaking the code
         if r.status_code == 200: #AUTHORIZED
@@ -29,7 +37,7 @@ def authenticate (env):  #TODO: make try catch for everything inside this
     #Auth PROD
     if env == 'prod':
         pload = {'user_name':userCredentials.user['user_name'],'password':userCredentials.user['password']}
-        r = requests.post(cdcportals.cdcauth.format('prod'),data = pload, headers={'Accept': 'application/vnd.api+json'}, verify = False)
+        r = requests.post(cdcauth.format('prod'),data = pload, **requestopts)
         if r.status_code == 200: #AUTHORIZED
             api_token = r.json()['payload']['api_token']
             JWTprod = 'Bearer %s' % (api_token)
@@ -48,7 +56,9 @@ def authenticate (env):  #TODO: make try catch for everything inside this
 #get the account and market that the vehicle is mapped from a single Vin
 def getAccountFromVin (JWT,vin):
     #get login Id and user Market from CDC-INT
-    responseInt = requests.get(cdcportals.cdcgetcustomerdetails.format('int',*vin),headers = {'JWT':JWT.envint}, verify = False)
+    vinrequestopts = requestopts.copy()
+    vinrequestopts['headers']['JWT'] = JWT.envint
+    responseInt = requests.get(cdcgetcustomerdetails.format('int',*vin), **vinrequestopts)
     print(responseInt)
     if len(responseInt.json()['payload']['customer_details']) > 0:
         #get the LoginID and check if its mapped
@@ -59,7 +69,8 @@ def getAccountFromVin (JWT,vin):
         loginIdInt = 'No account'
         userMarketInt = 'No account'
     #get login Id and user Market from CDC-PROD
-    responseProd = requests.get(cdcportals.cdcgetcustomerdetails.format('prod',*vin),headers = {'JWT':JWT.envprod}, verify = False)
+    vinrequestopts['headers']['JWT'] = JWT.envprod
+    responseProd = requests.get(cdcgetcustomerdetails.format('prod',*vin),**vinrequestopts)
     if len(responseProd.json()['payload']['customer_details']) > 0:
         #get the LoginID and check if its mapped
         loginIdProd = parseaccount.checkIfMapped(responseProd.json()['payload']['customer_details'][0]['loginName']['value'])
@@ -80,7 +91,9 @@ def getAccountFromVin (JWT,vin):
 #Check if it is logged and if not, log to cdc (both int and prod)
 def check_auth (JWT):
     #check if INT auth is ok
-    response = requests.get(cdcportals.cdcgetcustomerdetails.format('int','WBAKS4106E0C36040'),headers = {'JWT':JWT.envint}, verify = False) #TODO: put this haerdcoded vehicle to a config file
+    vinrequestopts = requestopts.copy()
+    vinrequestopts['headers']['JWT'] = JWT.envint
+    response = requests.get(cdcgetcustomerdetails.format('int',test_vin), **vinrequestopts) 
     if response.status_code == 401: #UNAUTHORIZED
         print ('Not yet connected. Logging...')
         isPassCorrect = authenticate ('int')
@@ -91,7 +104,8 @@ def check_auth (JWT):
         print ('ERROR %s' % (response))
         isPassCorrect = False
     #check if PROD auth is ok
-    response = requests.get(cdcportals.cdcgetcustomerdetails.format('prod','WBAKS4106E0C36040'),headers = {'JWT':JWT.envprod}, verify = False)  #TODO: put this haerdcoded vehicle to a config file
+    vinrequestopts['headers']['JWT'] = JWT.envprod
+    response = requests.get(cdcgetcustomerdetails.format('prod',test_vin), **vinrequestopts)
     if response.status_code == 401: #UNAUTHORIZED
         print ('Not yet connected. Logging...')
         authenticate ('prod')

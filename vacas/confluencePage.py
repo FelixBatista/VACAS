@@ -2,11 +2,16 @@ import requests
 import csv
 import userCredentials
 import parseaccount
+import yaml
+
+#Load Configuration
+config_file = yaml.load(open("config.yaml", 'r'), Loader=yaml.SafeLoader)
+confluence_url =config_file['confluence_url']
+page_id = config_file['confluence_page']
 
 #Confluence Page ID
 
 def postOnConfluence():
-    page_id = '1497858644'      #TODO: Put all hardcoded definitions liek this in config file
     credentials = (userCredentials.user['user_name'],userCredentials.user['password'])
 
     #make table header
@@ -46,11 +51,9 @@ def postOnConfluence():
 
 
 # -- Confluence --
-confluence_url = 'https://atc.bmwgroup.net/confluence/rest/api/content/{0}'
-
 def get_page_info(page_id, credentials):
     url = confluence_url.format(page_id)
-    r = requests.get(url, auth=credentials) #Stopped working. On postman it works on two header: authorization and cookies
+    r = requests.get(url, auth=(credentials)) #Stopped working. On postman it works on two header: authorization and cookies
     r.raise_for_status()
 
     response = r.json()
