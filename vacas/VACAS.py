@@ -3,10 +3,8 @@
 #importing modules
 import threading
 import csv
-import os
+import cdc_client
 import PySimpleGUI as sg
-import apiHandling
-import tokenHandling
 import confluencePage
 import userCredentials
 import yaml
@@ -15,7 +13,7 @@ from resources.icons import mac_icon
 
 
 #Worker thread to check password and prepare program
-def prepare_program (window):
+def prepare_program (window,cdc):
     print('Starting VACAS')
 
     #Set all info from CONFIG
@@ -31,29 +29,19 @@ def prepare_program (window):
         window['printoutput'].update(file)
     window['checkbox_acc_list_image'].update(visible=True)
 
-    #checking for JWT files
-    file_check.file_check ('generated/JWTint.txt')
-    file_check.file_check ('generated/JWTprod.txt')
-
-    #set JWT class
-    JWT = tokenHandling.jwt(tokenHandling.readJWT('generated/JWTint.txt'),tokenHandling.readJWT('generated/JWTprod.txt'))
-    #Verifying if user is logged to CDC-INT and PROD
-    run = apiHandling.check_auth(JWT)
-    
-    #check password and display results
-    if run == False:
+    #checking for JWT files and log into CDC
+    #and check password and display results
+    if cdc.get_token('int') == False or cdc.get_token('prod') == False:
         window['senha_errada'].update(visible=True)
         window.write_event_value('-PREPARE-', False)
     else:
         window['senha_errada'].update(visible=False)
         window.write_event_value('-PREPARE-', True)
-    
     window['checkbox_auth_image'].update(visible=True)
 
 
-def execute_program (window):
+def execute_program (window,cdc):
     #set new JWT class
-    JWT = tokenHandling.jwt(tokenHandling.readJWT('generated/JWTint.txt'),tokenHandling.readJWT('generated/JWTprod.txt'))
     window['checkbox_password_image'].update(visible=True)
 
     #Making the file into a list
@@ -63,7 +51,7 @@ def execute_program (window):
 
     #Go throught list getting all accounts for each VIN both INT and PROD
     for x in vehiclelist:
-        apiHandling.getAccountFromVin(JWT,x)
+        cdc.get_vehicle_status(x)
         file = open('generated/accountslist.csv','r+').read()
         window['printoutput'].update(file)
     window['checkbox_vehicles_image'].update(visible=True)
@@ -115,12 +103,13 @@ def gui ():
 
         elif event == 'Start':
             userCredentials.user['password'] = values ['password']
-            thread = threading.Thread(target=prepare_program, args=(window,), daemon=True)
+            cdc = cdc_client.CDCClient(userCredentials.user['user_name'],userCredentials.user['password'])
+            thread = threading.Thread(target=prepare_program, args=(window,cdc), daemon=True)
             thread.start()
 
         elif event == '-PREPARE-':
             if values[event] == True:
-                thread = threading.Thread(target=execute_program, args=(window,), daemon=True)
+                thread = threading.Thread(target=execute_program, args=(window,cdc), daemon=True)
                 thread.start()
 
         if thread:
@@ -135,6 +124,6 @@ def gui ():
     window.close()
 
 if __name__ == '__main__':
-    file = file_check.file_check ('generated/accountslist.csv')
+    file = open(file_check.file_check ('generated/accountslist.csv'),'r').read()
     gui()
     print('Exiting Program')

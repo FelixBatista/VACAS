@@ -12,4 +12,4 @@ def file_check (file_name):
         file = open(file_name,'w')
         file.write('Null')
         file = open(file_name,'r').read()
-    return file
+    return file_name
