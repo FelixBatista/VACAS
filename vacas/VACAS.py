@@ -51,7 +51,12 @@ def execute_program (window,cdc):
 
     #Go throught list getting all accounts for each VIN both INT and PROD
     for x in vehiclelist:
-        cdc.get_vehicle_status(x)
+        vehicle = cdc.get_vehicle_status(x)
+        #saving the vehicle on a csv file
+        with open('generated/accountslist.csv','a', newline='') as f:
+            writer = csv.writer(f)
+            row = [vehicle[0], vehicle[1], vehicle[2], vehicle[3], vehicle[4]]
+            writer.writerow(row)
         file = open('generated/accountslist.csv','r+').read()
         window['printoutput'].update(file)
     window['checkbox_vehicles_image'].update(visible=True)

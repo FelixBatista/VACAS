@@ -1,7 +1,5 @@
-
 import requests
 import file_check
-import csv
 import vehicle
 import parseaccount
 import yaml
@@ -52,13 +50,8 @@ class CDCClient:
         self.vehicle_status_prod = self._get_vehicle_status_per_environment(vin,'prod')
         #make a new iteration on the array of vehicles and save the class with the responses
         temp = vehicle.Vehicle(*vin, self.vehicle_status_int[0], self.vehicle_status_int[1], self.vehicle_status_prod[0], self.vehicle_status_prod[1])
-        print(temp.vin,'|',temp.intMarket,'|',temp.accountInt,'|',temp.prodMarket,'|',temp.accountProd) #TODO: At this point, this stuff is duplicated
-        #saving the vehicle on a csv file
-        with open('generated/accountslist.csv','a', newline='') as f:
-            writer = csv.writer(f)
-            row = [temp.vin, temp.intMarket, temp.accountInt, temp.prodMarket, temp.accountProd]
-            writer.writerow(row)
-
+        print(temp.vin,'|',temp.intMarket,'|',temp.accountInt,'|',temp.prodMarket,'|',temp.accountProd)
+        return temp.vin, temp.intMarket, temp.accountInt, temp.prodMarket, temp.accountProd
 
     def get_token(self,environment):        #ask for token
         _file = file_check.file_check ('generated/JWT{0}.txt'.format(environment))
@@ -77,8 +70,9 @@ class CDCClient:
         _file = file_check.file_check ('generated/JWT{0}.txt'.format(environment))
         f = open(_file,"w")
         f.write('Bearer %s' % (api_token))
+        self.jwt[environment] = 'Bearer %s' % (api_token)
         f.close()
-        print('JWTint file created and Logged')
+        print('JWT{0} file created and Logged'.format(environment)) #TODO: read file and write inside JWT
 
 
     def _login(self,environment):
