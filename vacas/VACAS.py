@@ -5,7 +5,7 @@ import threading
 import csv
 import cdc_client
 import PySimpleGUI as sg
-import confluencePage
+import confluence_client
 import userCredentials
 import yaml
 import file_check
@@ -62,7 +62,8 @@ def execute_program (window,cdc):
     window['checkbox_vehicles_image'].update(visible=True)
 
     #sending to Confluence
-    result = confluencePage.postOnConfluence()
+    confluence = confluence_client.ConcluenceClient(userCredentials.user['user_name'],userCredentials.user['password'])
+    result = confluence.postOnConfluence()
     if result == True:
         print('Posted on Confluence')
     else:

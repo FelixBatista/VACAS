@@ -44,7 +44,7 @@ class CDCClient:
             print ('ERROR %s' % (e))
             return 'Error','Error'
 
-    def get_vehicle_status(self, vin):          #TODO: take the file handling out of this function
+    def get_vehicle_status(self, vin):
         #get loginID and Market for both INT and PROD
         self.vehicle_status_int = self._get_vehicle_status_per_environment(vin,'int')
         self.vehicle_status_prod = self._get_vehicle_status_per_environment(vin,'prod')
@@ -72,7 +72,7 @@ class CDCClient:
         f.write('Bearer %s' % (api_token))
         self.jwt[environment] = 'Bearer %s' % (api_token)
         f.close()
-        print('JWT{0} file created and Logged'.format(environment)) #TODO: read file and write inside JWT
+        print('JWT{0} file created and Logged'.format(environment))
 
 
     def _login(self,environment):
