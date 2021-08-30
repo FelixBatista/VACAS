@@ -34,12 +34,12 @@ class CDCClient:
                 #get the LoginID and check if its mapped
                 self.loginId = parseaccount.checkIfMapped(response.json()['payload']['customer_details'][0]['loginName']['value'])
                 self.userMarket = response.json()['payload']['customer_details'][0]['userMarket']['value']
-                return self.loginId, self.userMarket
+                return self.userMarket, self.loginId
             else:
                 print('Vehicle with no account')
                 self.loginId = 'No account'
                 self.userMarket = 'No account'   
-                return self.loginId, self.userMarket     
+                return self.userMarket, self.loginId
         except requests.exceptions.RequestException as e:
             print ('ERROR %s' % (e))
             return 'Error','Error'
@@ -97,7 +97,7 @@ class CDCClient:
         try:
             response = requests.get(self.cdc_get_customer_details.format(environment,self.test_vin), **vin_requestopts)
             if not response.status_code // 100 == 2: #UNAUTHORIZED
-                print ('Not yet connected. Logging... ERROR %s' % (response))
+                print ('Not yet connected. Logging... Response: %s' % (response))
                 return False
             #if it is AUTHORIZED
             print ('Already Logged')
