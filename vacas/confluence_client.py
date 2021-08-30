@@ -43,7 +43,7 @@ class ConcluenceClient:
                 #last 7 digits in bold
                 content += f'<td>{row[0][0:10]}<b>{row[0][10:17]}</b></td>'
                 content += f'<td>{row[1]}</td>'
-                #color de element
+                #color the element
                 content += f'<td style="background-color: {parseaccount.getColor(row[2])};">{row[2]}</td>'
                 content += f'<td>{row[3]}</td>'
                 content += f'<td style="background-color: {parseaccount.getColor(row[4])};">{row[4]}</td>'
