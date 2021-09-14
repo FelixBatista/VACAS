@@ -11,7 +11,6 @@ import yaml
 import file_check
 from resources.icons import mac_icon
 
-
 #Worker thread to check password and prepare program
 def prepare_program (window,cdc):
     print('Starting VACAS')

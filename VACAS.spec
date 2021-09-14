@@ -3,11 +3,10 @@
 
 block_cipher = None
 
-
-a = Analysis(['VACAS.py'],
-             pathex=['/Users/qxz0n5g/Desktop/Vehice_Account_Automation'],
+a = Analysis(['vacas/VACAS.py'],
+             pathex=['usr/local/bin/python3','/Users/qxz0n5g/Desktop/VACAS/vacas'],
              binaries=[],
-             datas=[],
+             datas=[('vacas/resources','./resources'),('vacas/config.yaml','.')],
              hiddenimports=[],
              hookspath=[],
              hooksconfig={},
@@ -33,7 +32,7 @@ exe = EXE(pyz,
           disable_windowed_traceback=False,
           target_arch=None,
           codesign_identity=None,
-          entitlements_file=None , icon='cow.icns')
+          entitlements_file=None )
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
@@ -42,3 +41,22 @@ coll = COLLECT(exe,
                upx=True,
                upx_exclude=[],
                name='VACAS')
+
+app = BUNDLE(   coll,
+                name='VACAS.app',
+                icon='vacas/resources/icons/cow.icns',
+                bundle_identifier=None,
+                version='0.3',
+                info_plist={
+                    'NSPrincipalClass': 'NSApplication',
+                    'NSAppleScriptEnabled': False,
+                    'CFBundleDocumentTypes': [
+                        {
+                            'CFBundleTypeName': 'My File Format',
+                            'CFBundleTypeIconFile': 'MyFileIcon.icns',
+                            'LSItemContentTypes': ['com.example.myformat'],
+                            'LSHandlerRank': 'Owner'
+                        }
+                    ]
+                },
+            )

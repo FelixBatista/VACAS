@@ -3,6 +3,7 @@ import file_check
 import vehicle
 import parseaccount
 import yaml
+import os
 
 class CDCClient:
     config_file = yaml.load(open("config.yaml", 'r'), Loader=yaml.SafeLoader)
