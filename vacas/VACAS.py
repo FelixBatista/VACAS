@@ -9,6 +9,7 @@ import confluence_client
 import userCredentials
 import yaml
 import file_check
+import keyring
 from resources.icons import mac_icon
 
 #Worker thread to check password and prepare program
@@ -87,7 +88,7 @@ def gui ():
             [sg.Text('Getting accounts',key= 'checkbox_vehicles_text',font=('arial',10))],
             [sg.Text('Posting on Confluence',key= 'checkbox_confluence_text',font=('arial',10))]]
     #define layout
-    layout = [  [sg.Text('Enter your TSS password:'), sg.InputText(key='password',password_char='*'),sg.Text('Senha Errada',key='senha_errada',font=('arial',15),text_color='red',visible=False)],
+    layout = [  [sg.Text('Enter your TSS password:'), sg.InputText(default_text=keyring.get_password("system", userCredentials.user['user_name']),key='password',password_char='*'),sg.Text('Senha Errada',key='senha_errada',font=('arial',15),text_color='red',visible=False),sg.Checkbox('save your password?', key='save_password')],
                 [sg.Text('Enter your password and hit start', key='instruction')],
                 [sg.Column(col1, element_justification='c' ),
                 sg.Column(col2, element_justification='c'),
@@ -96,8 +97,6 @@ def gui ():
                 [sg.Button('Start'), sg.Button('Exit')]  ]
     #define window
     window = sg.Window( "Vehicle Accounts Automation Service", layout, icon=mac_icon.mac_icon)
-    
-    
     
     # --------------------- EVENT LOOP ---------------------
     while True:
@@ -108,6 +107,8 @@ def gui ():
 
         elif event == 'Start':
             userCredentials.user['password'] = values ['password']
+            if values['save_password'] == True:
+                keyring.set_password("system", userCredentials.user['user_name'], userCredentials.user['password'])
             cdc = cdc_client.CDCClient(userCredentials.user['user_name'],userCredentials.user['password'])
             thread = threading.Thread(target=prepare_program, args=(window,cdc), daemon=True)
             thread.start()
