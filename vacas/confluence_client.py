@@ -2,11 +2,13 @@ import requests
 import csv
 import parseaccount
 import yaml
+import os
 
+cwd = os.path.abspath (os.path.dirname(__file__))
 
 class ConcluenceClient:
     #Load Configuration
-    config_file = yaml.load(open("config.yaml", 'r'), Loader=yaml.SafeLoader)
+    config_file = yaml.load(open(os.path.join(cwd , 'config.yaml'), 'r'), Loader=yaml.SafeLoader)
     confluence_url =config_file['confluence_url']
     page_id = config_file['confluence_page']
 
@@ -36,7 +38,7 @@ class ConcluenceClient:
         content += '</tr></thead><tbody>'
 
         #insert all rows on the table from the CSV file
-        with open('generated/accountslist.csv') as l:
+        with open(os.path.join(cwd , 'generated/accountslist.csv')) as l:
             reader = csv.reader(l, delimiter=',')
             for row in reader:
                 content += '<tr>'

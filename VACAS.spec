@@ -33,6 +33,7 @@ exe = EXE(pyz,
           target_arch=None,
           codesign_identity=None,
           entitlements_file=None )
+
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
@@ -43,7 +44,7 @@ coll = COLLECT(exe,
                name='VACAS')
 
 app = BUNDLE(   coll,
-                name='VACAS.app',
+                name='VACAS_MAC.app',
                 icon='vacas/resources/icons/cow.icns',
                 bundle_identifier=None,
                 version='0.3',

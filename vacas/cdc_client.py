@@ -3,9 +3,13 @@ import file_check
 import vehicle
 import parseaccount
 import yaml
+import os
+from VACAS import cwd
+
+cwd = os.path.abspath (os.path.dirname(__file__))
 
 class CDCClient:
-    config_file = yaml.load(open("config.yaml", 'r'), Loader=yaml.SafeLoader)
+    config_file = yaml.load(open(os.path.join(cwd , 'config.yaml'), 'r'), Loader=yaml.SafeLoader)
     cdc_auth = config_file['cdcauth']
     cdc_get_customer_details = config_file['cdcgetcustomerdetails']
     test_vin = config_file['test_vin']
@@ -54,7 +58,7 @@ class CDCClient:
         return temp.vin, temp.intMarket, temp.accountInt, temp.prodMarket, temp.accountProd
 
     def get_token(self,environment):        #ask for token
-        _file = file_check.file_check ('generated/JWT{0}.txt'.format(environment))
+        _file = file_check.file_check (os.path.join(cwd , 'generated/JWT{0}.txt'.format(environment)))
         f = open(_file,"r")
         self.jwt[environment] = f.read()
         f.close()
@@ -67,7 +71,7 @@ class CDCClient:
 
 
     def _set_token(self, api_token, environment):   #save token
-        _file = file_check.file_check ('generated/JWT{0}.txt'.format(environment))
+        _file = file_check.file_check (os.path.join(cwd , 'generated/JWT{0}.txt'.format(environment)))
         f = open(_file,"w")
         f.write('Bearer %s' % (api_token))
         self.jwt[environment] = 'Bearer %s' % (api_token)

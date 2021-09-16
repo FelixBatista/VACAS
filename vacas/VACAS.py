@@ -10,22 +10,27 @@ import userCredentials
 import yaml
 import file_check
 import keyring
+from pathlib import Path
+import os
 from resources.icons import mac_icon
+
+cwd = os.path.abspath (os.path.dirname(__file__))
+os.chdir(cwd)
 
 #Worker thread to check password and prepare program
 def prepare_program (window,cdc):
     print('Starting VACAS')
 
     #Set all info from CONFIG
-    config_file = yaml.load(open("config.yaml", 'r'), Loader=yaml.SafeLoader)
+    config_file = yaml.load(open(os.path.join(cwd , 'config.yaml'), 'r'), Loader=yaml.SafeLoader)
     print('Loading Config.yaml file...')
     for key, value in config_file.items():
         print(f"{key}: {value}")
 
     #cleaning the accounts file
-    with open('generated/accountslist.csv','r+') as file:
+    with open(os.path.join(cwd , 'generated/accountslist.csv'),'r+') as file:
         file.truncate(0) # need '0' when using r+
-        file = open('generated/accountslist.csv','r+').read()
+        file = open(os.path.join(cwd , 'generated/accountslist.csv'),'r+').read()
         window['printoutput'].update(file)
     window['checkbox_acc_list_image'].update(visible=True)
 
@@ -45,7 +50,7 @@ def execute_program (window,cdc):
     window['checkbox_password_image'].update(visible=True)
 
     #Making the file into a list
-    with open('resources/vehicles/vehiclelist.csv', newline='') as f:
+    with open(os.path.join(cwd , 'resources/vehicles/vehiclelist.csv'), newline='') as f:
         reader = csv.reader(f)
         vehiclelist = list(reader)
 
@@ -53,11 +58,11 @@ def execute_program (window,cdc):
     for x in vehiclelist:
         vehicle = cdc.get_vehicle_status(x)
         #saving the vehicle on a csv file
-        with open('generated/accountslist.csv','a', newline='') as f:
+        with open(os.path.join(cwd , 'generated/accountslist.csv'),'a', newline='') as f:
             writer = csv.writer(f)
             row = [vehicle[0], vehicle[1], vehicle[2], vehicle[3], vehicle[4]]
             writer.writerow(row)
-        file = open('generated/accountslist.csv','r+').read()
+        file = open(os.path.join(cwd , 'generated/accountslist.csv'),'r+').read()
         window['printoutput'].update(file)
     window['checkbox_vehicles_image'].update(visible=True)
 
@@ -77,11 +82,11 @@ def gui ():
     #define columns
     col1=[[sg.Output(size=(50,10))]]
     col2=[[sg.Multiline(file, size=(80, 10), write_only=False, key='printoutput', auto_refresh=True, no_scrollbar=False)]]
-    col3=[  [sg.Image('resources/images/good.png',key= 'checkbox_password_image',visible=False)],
-            [sg.Image('resources/images/good.png',key= 'checkbox_acc_list_image',visible=False)],
-            [sg.Image('resources/images/good.png',key= 'checkbox_auth_image',visible=False)],
-            [sg.Image('resources/images/good.png',key= 'checkbox_vehicles_image',visible=False)],
-            [sg.Image('resources/images/good.png',key= 'checkbox_confluence_image',visible=False)]]
+    col3=[  [sg.Image(os.path.join(cwd , 'resources/images/good.png'),key= 'checkbox_password_image',visible=False)],
+            [sg.Image(os.path.join(cwd , 'resources/images/good.png'),key= 'checkbox_acc_list_image',visible=False)],
+            [sg.Image(os.path.join(cwd , 'resources/images/good.png'),key= 'checkbox_auth_image',visible=False)],
+            [sg.Image(os.path.join(cwd , 'resources/images/good.png'),key= 'checkbox_vehicles_image',visible=False)],
+            [sg.Image(os.path.join(cwd , 'resources/images/good.png'),key= 'checkbox_confluence_image',visible=False)]]
     col4=[  [sg.Text('Setting user credentials',key= 'checkbox_password_text',font=('arial',10))],
             [sg.Text('Making a new Accounts list',key= 'checkbox_acc_list_text',font=('arial',10))],
             [sg.Text('Checking authentication',key= 'checkbox_auth_text',font=('arial',10))],
@@ -120,7 +125,7 @@ def gui ():
 
         if thread:
             while thread.is_alive() == True:
-                sg.popup_animated('resources/images/loading.gif', message='Wait a second. Loading...', no_titlebar=False, time_between_frames=100, text_color='black', background_color='white', grab_anywhere=True, icon=mac_icon.mac_icon)
+                sg.popup_animated(os.path.join(cwd , 'resources/images/loading.gif'), message='Wait a second. Loading...', no_titlebar=False, time_between_frames=100, text_color='black', background_color='white', grab_anywhere=True, icon=mac_icon.mac_icon)
             thread.join(timeout=0)
             if not thread.is_alive():
                 sg.popup_animated(None)
@@ -130,6 +135,6 @@ def gui ():
     window.close()
 
 if __name__ == '__main__':
-    file = open(file_check.file_check ('generated/accountslist.csv'),'r').read()
+    file = open(file_check.file_check (os.path.join(cwd , 'generated/accountslist.csv')),'r').read()
     gui()
     print('Exiting Program')
