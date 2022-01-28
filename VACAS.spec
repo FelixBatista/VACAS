@@ -16,12 +16,21 @@ a = Analysis(['vacas/VACAS.py'],
              win_private_assemblies=False,
              cipher=block_cipher,
              noarchive=False)
+
+#splash = Splash('vacas/resources/images/vacas_splash.png',
+#                binaries=a.binaries,
+#                datas=a.datas,
+#                text_pos=(10, 50),
+#                text_size=12,
+#                text_color='black')
+
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
 
 exe = EXE(pyz,
           a.scripts, 
           [],
+          icon='vacas/resources/icons/cow.ico',
           exclude_binaries=True,
           name='VACAS',
           debug=False,
@@ -44,7 +53,7 @@ coll = COLLECT(exe,
                name='VACAS')
 
 app = BUNDLE(   coll,
-                name='VACAS_MAC.app',
+                name='VACAS.app',
                 icon='vacas/resources/icons/cow.icns',
                 bundle_identifier=None,
                 version='0.3',

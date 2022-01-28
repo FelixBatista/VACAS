@@ -10,7 +10,6 @@ import userCredentials
 import yaml
 import file_check
 import keyring
-from pathlib import Path
 import os
 from resources.icons import mac_icon
 
@@ -67,7 +66,7 @@ def execute_program (window,cdc):
     window['checkbox_vehicles_image'].update(visible=True)
 
     #sending to Confluence
-    confluence = confluence_client.ConcluenceClient(userCredentials.user['user_name'],userCredentials.user['password'])
+    confluence = confluence_client.ConcluenceClient(userCredentials.user['user_name'],userCredentials.user['passwordatc'])
     result = confluence.postOnConfluence()
     if result == True:
         print('Posted on Confluence')
@@ -93,8 +92,9 @@ def gui ():
             [sg.Text('Getting accounts',key= 'checkbox_vehicles_text',font=('arial',10))],
             [sg.Text('Posting on Confluence',key= 'checkbox_confluence_text',font=('arial',10))]]
     #define layout
-    layout = [  [sg.Text('Enter your TSS password:'), sg.InputText(default_text=keyring.get_password("system", userCredentials.user['user_name']),key='password',password_char='*'),sg.Text('Senha Errada',key='senha_errada',font=('arial',15),text_color='red',visible=False),sg.Checkbox('save your password?', key='save_password')],
-                [sg.Text('Enter your password and hit start', key='instruction')],
+    layout = [  [sg.Text('Enter your Q-number:'), sg.InputText(default_text=keyring.get_password('Vacas', 'user'),key='username'),sg.Checkbox('save your Q-number?', key='save_username', default=True)],
+                [sg.Text('Enter your TSS password:'), sg.InputText(default_text=keyring.get_password('Vacas', 'pass'),key='password',password_char='*'),sg.Text('Usuario ou senha Errada',key='senha_errada',font=('arial',15),text_color='red',visible=False),sg.Checkbox('save your password?', key='save_password', default=True)],
+                [sg.Text('Enter your ATC password:'), sg.InputText(default_text=keyring.get_password('Vacas', 'passatc'),key='passwordatc',password_char='*'),sg.Text('Usuario ou senha Errada',key='senha_erradaatc',font=('arial',15),text_color='red',visible=False),sg.Checkbox('save your password?', key='save_passwordatc', default=True)],
                 [sg.Column(col1, element_justification='c' ),
                 sg.Column(col2, element_justification='c'),
                 sg.Column(col3, element_justification='left', vertical_alignment='top'),
@@ -111,9 +111,15 @@ def gui ():
             break
 
         elif event == 'Start':
+            userCredentials.user['user_name'] = values ['username']
             userCredentials.user['password'] = values ['password']
+            userCredentials.user['passwordatc'] = values ['passwordatc']
+            if values['save_username'] == True:
+                keyring.set_password('Vacas', 'user', userCredentials.user['user_name'])
             if values['save_password'] == True:
-                keyring.set_password("system", userCredentials.user['user_name'], userCredentials.user['password'])
+                keyring.set_password('Vacas', 'pass', userCredentials.user['password'])
+            if values['save_passwordatc'] == True:
+                keyring.set_password('Vacas', 'passatc', userCredentials.user['passwordatc'])
             cdc = cdc_client.CDCClient(userCredentials.user['user_name'],userCredentials.user['password'])
             thread = threading.Thread(target=prepare_program, args=(window,cdc), daemon=True)
             thread.start()
