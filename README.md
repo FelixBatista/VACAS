@@ -1,6 +1,6 @@
 # VACAS - Vehicle Accounts Automation Service
 
-<img src="vacas/resources/images/vacas_splash.png" alt="Vacas Banner">
+<img src="https://atc.bmwgroup.net/bitbucket/projects/ELECSYSBR/repos/vacas/raw/vacas/resources/images/vacas_splash.png?at=refs%2Fheads%2Fmain" alt="Vacas Banner">
 
 > This program is used to create a confluence page with a list of vehicle accounts. These vehicle accounts are taken from CDC-int and CDC-emea and then formatted to an html.
 > 
