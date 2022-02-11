@@ -1,14 +1,6 @@
 # VACAS - Vehicle Accounts Automation Service
 
-<!---Esses são exemplos. Veja https://shields.io para outras pessoas ou para personalizar este conjunto de escudos. Você pode querer incluir dependências, status do projeto e informações de licença aqui--->
-
-![GitHub repo size](https://img.shields.io/github/repo-size/iuricode/README-template?style=for-the-badge)
-![GitHub language count](https://img.shields.io/github/languages/count/iuricode/README-template?style=for-the-badge)
-![GitHub forks](https://img.shields.io/github/forks/iuricode/README-template?style=for-the-badge)
-![Bitbucket open issues](https://img.shields.io/bitbucket/issues/iuricode/README-template?style=for-the-badge)
-![Bitbucket open pull requests](https://img.shields.io/bitbucket/pr-raw/iuricode/README-template?style=for-the-badge)
-
-<img src="vacas/resources/images/vacas-splash.png" alt="Vacas Banner">
+<img src="vacas/resources/images/vacas_splash.png" alt="Vacas Banner">
 
 > This program is used to create a confluence page with a list of vehicle accounts. These vehicle accounts are taken from CDC-int and CDC-emea and then formatted to an html.
 > 
@@ -38,8 +30,8 @@ Still under development. I need testers! :)
 ## ☕ Using <Vacas>
 
 To use <Vacas>, follow these steps:
-1. Go to DIST folder;
-2. Run VACAS.app;
+1. Go to `DIST` folder;
+2. Run `VACAS.app`;
 3. Confirm any pop-up that may appear;
 4. App will open;
 5. Enter you QX, password and confluence password (confluence password and QX password may be the same);
@@ -47,14 +39,14 @@ To use <Vacas>, follow these steps:
 7. App may take a few minutes to run all the vehicles in the list.
 
 If you want to change the vehicles list:
-1. Go to vacas/resources/vehicles;
-2. Open vehicleslist.csv;
+1. Go to `vacas/resources/vehicles`;
+2. Open `vehicleslist.csv`;
 3. Put each VIN one bellow the other.
 
 To change the confluence page it will upload:
-1. Go to vacas;
-2. Open config.yaml;
-3. Change the ID at confluence_page.
+1. Go to `vacas`;
+2. Open `config.yaml`;
+3. Change the ID at `confluence_page`.
 
 ## 📫 Contributing <VACAS>
 To contribute to <VACAS>, follow these steps:
@@ -73,7 +65,7 @@ Please, make this list bigger:
   <tr>
     <td align="center">
       <a href="#">
-        <img src="https://avatars.githubusercontent.com/u/39321694?v=4" width="100px;" alt="Felix picture on Github"/><br>
+        <img src="https://avatars.githubusercontent.com/u/39321694?v=4" width="80px;" alt="Felix picture on Github"/><br>
         <sub>
           <b>Felix Neto</b>
         </sub>
